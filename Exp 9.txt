@@ -1,0 +1,120 @@
+import pandas as pd
+import numpy as np
+In [2]:
+data = {
+    'ApplicantIncome': [5000, 3000, 4500, 6000, 2000, 4000],
+    'CreditScore': [700, 650, 720, 680, 600, 720],
+    'LoanAmount': [200, 150, 180, 210, 100, 170],
+    'LoanApproved': [1, 0, 1, 1, 0, 1]  # 1 = Approved, 0 = Not Approved
+}
+In [3]:
+# Create a DataFrame
+loan_data = pd.DataFrame(data)
+In [4]:
+# Save to CSV
+loan_data.to_csv('loan_data.csv', index=False)
+
+print("Sample loan dataset created: loan_data.csv")
+Sample loan dataset created: loan_data.csv
+In [5]:
+loan_data
+Out[5]:
+	ApplicantIncome	CreditScore	LoanAmount	LoanApproved
+0	5000	700	200	1
+1	3000	650	150	0
+2	4500	720	180	1
+3	6000	680	210	1
+4	2000	600	100	0
+5	4000	720	170	1
+In [6]:
+loan_data.columns
+Out[6]:
+Index(['ApplicantIncome', 'CreditScore', 'LoanAmount', 'LoanApproved'], dtype='object')
+In [14]:
+loan_data.iloc[0]['ApplicantIncome']
+Out[14]:
+5000
+# New loan application
+new_application = {
+    'ApplicantIncome': 3500,
+    'CreditScore': 670,
+    'LoanAmount': 160
+}
+In [16]:
+#cal distance using formula
+
+# Function to calculate Euclidean distance
+def calculate_distance(row):
+    return np.sqrt(
+        (row['ApplicantIncome'] - new_application['ApplicantIncome']) ** 2 +
+        (row['CreditScore'] - new_application['CreditScore']) ** 2 +
+        (row['LoanAmount'] - new_application['LoanAmount']) ** 2
+    )
+
+# Calculate distances for all entries in the dataset
+loan_data['Distance'] = loan_data.apply(calculate_distance, axis=1)
+
+# Display the results
+print(loan_data[['ApplicantIncome', 'CreditScore', 'LoanAmount', 'LoanApproved', 'Distance']])
+   ApplicantIncome  CreditScore  LoanAmount  LoanApproved     Distance
+0             5000          700         200             1  1500.833102
+1             3000          650         150             0   500.499750
+2             4500          720         180             1  1001.448950
+3             6000          680         210             1  2500.519946
+4             2000          600         100             0  1502.830662
+5             4000          720         170             1   502.593275
+In [17]:
+loan_data
+Out[17]:
+	ApplicantIncome	CreditScore	LoanAmount	LoanApproved	Distance
+0	5000	700	200	1	1500.833102
+1	3000	650	150	0	500.499750
+2	4500	720	180	1	1001.448950
+3	6000	680	210	1	2500.519946
+4	2000	600	100	0	1502.830662
+5	4000	720	170	1	502.593275
+In [18]:
+#Now Sorting dataset according to distance
+loan_data.sort_values(by='Distance')
+Out[18]:
+	ApplicantIncome	CreditScore	LoanAmount	LoanApproved	Distance
+1	3000	650	150	0	500.499750
+5	4000	720	170	1	502.593275
+2	4500	720	180	1	1001.448950
+0	5000	700	200	1	1500.833102
+4	2000	600	100	0	1502.830662
+3	6000	680	210	1	2500.519946
+In [23]:
+print("Enter K value :")
+k_val=input()
+Enter K value :
+3
+In [ ]:
+ 
+In [ ]:
+ 
+In [24]:
+# Calculate distances for each row
+loan_data['Distance'] = loan_data.apply(calculate_distance, axis=1)
+
+ 
+k_val = 3  # Choose an odd value for K
+nearest_neighbors = loan_data.nsmallest(k_val, 'Distance')
+
+# Step 4: Majority Voting
+vote_count = nearest_neighbors['LoanApproved'].value_counts()
+predicted_approval = vote_count.idxmax()
+
+# Step 5: Display results
+print("Nearest Neighbors:")
+print(nearest_neighbors[['ApplicantIncome', 'CreditScore', 'LoanAmount', 'LoanApproved', 'Distance']])
+print(f"\nPredicted Loan Approval Status: {predicted_approval}")
+Nearest Neighbors:
+   ApplicantIncome  CreditScore  LoanAmount  LoanApproved     Distance
+1             3000          650         150             0   500.499750
+5             4000          720         170             1   502.593275
+2             4500          720         180             1  1001.448950
+
+Predicted Loan Approval Status: 1
+
+
